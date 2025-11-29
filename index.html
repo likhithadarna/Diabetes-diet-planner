@@ -1,0 +1,200 @@
+/
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Personalized Diabetes Diet Planner</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Landing Page -->
+  <div id="landing" class="page active-page fade-in">
+    <div class="card landing-highlight">
+      <h1 class="main-title">🌟 Diabetes Diet Planner</h1>
+      <p class="subtitle">A premium lifestyle & diet guide made just for you.</p>
+      <button onclick="showPage('profile')" class="btn-primary">Create Your Profile</button>
+    </div>
+  </div>
+
+  <!-- Profile Page -->
+  <div id="profile" class="page fade-in">
+    <div class="card">
+      <button class="back-btn" onclick="showPage('landing')">← Back</button>
+      <h2>👤 Create Your Profile</h2>
+      <label>Full Name:</label>
+      <input id="fullName" type="text" placeholder="Enter your name" />
+      <label>Age:</label>
+      <input id="age" type="number" placeholder="Enter your age" />
+      <label>Weight (kg):</label>
+      <input id="weight" type="number" placeholder="Enter your weight" />
+      <label>Height (cm):</label>
+      <input type="number" id="height" placeholder="Enter your height" required />
+
+      <label>Diabetes Type:</label>
+      <select id="diabetesType">
+        <option selected>Type 2</option>
+        <option>Type 1</option>
+        <option>Gestational</option>
+        <option>Pre-diabetes</option>
+      </select>
+      <div class="button-group">
+        <button onclick="saveProfileAndNext()" class="btn-primary">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bloodSugar" class="page fade-in">
+    <div class="card">
+      <button class="back-btn" onclick="showPage('profile')">← Back</button>
+      <h2>🩸 Blood Sugar Reading</h2>
+      <label>Pre-meal (mg/dL):</label>
+      <input id="preMeal" type="number" placeholder="Enter pre-meal reading" />
+      <label>Post-meal (mg/dL):</label>
+      <input id="postMeal" type="number" placeholder="Enter post-meal reading" />
+      <div id="readingResult" class="result"></div>
+      <div class="button-group">
+        <button onclick="addReadingAndNext()" class="btn-primary">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diet Plan Page (Dinner) - full-screen horizontal card, no scroll on desktop -->
+  <div id="dietPlan" class="page fade-in fullscreen">
+    <div class="card dinner-card">
+      <button class="back-btn" onclick="showPage('bloodSugar')">← Back</button>
+      <div class="meal-header">🍽️ Dinner Planner</div>
+
+      <div class="meal-columns">
+        <div class="meal-col mandatory">
+          <h4>Mandatory</h4>
+          <div class="meal-group">
+            <div class="food-item">
+              <div class="food-emoji">🥗</div>
+              <div class="food-name">Leafy salad</div>
+              <div class="food-kcal">80 kcal</div>
+              <input type="radio" name="dinner-mand" />
+            </div>
+            <div class="food-item">
+              <div class="food-emoji">🍗</div>
+              <div class="food-name">Grilled chicken</div>
+              <div class="food-kcal">220 kcal</div>
+              <input type="radio" name="dinner-mand" />
+            </div>
+            <div class="food-item">
+              <div class="food-emoji">🥛</div>
+              <div class="food-name">Low-fat yogurt</div>
+              <div class="food-kcal">90 kcal</div>
+              <input type="radio" name="dinner-mand" />
+            </div>
+          </div>
+        </div>
+
+        <div class="meal-col moderate">
+          <h4>Moderate</h4>
+          <div class="meal-group">
+            <div class="food-item">
+              <div class="food-emoji">🍚</div>
+              <div class="food-name">Small brown rice</div>
+              <div class="food-kcal">150 kcal</div>
+              <input type="radio" name="dinner-mod" />
+            </div>
+            <div class="food-item">
+              <div class="food-emoji">🥕</div>
+              <div class="food-name">Steamed veggies</div>
+              <div class="food-kcal">60 kcal</div>
+              <input type="radio" name="dinner-mod" />
+            </div>
+            <div class="food-item">
+              <div class="food-emoji">🥑</div>
+              <div class="food-name">Half avocado</div>
+              <div class="food-kcal">120 kcal</div>
+              <input type="radio" name="dinner-mod" />
+            </div>
+          </div>
+        </div>
+
+        <div class="meal-col high">
+          <h4>High</h4>
+          <div class="meal-group">
+            <div class="food-item">
+              <div class="food-emoji">🍕</div>
+              <div class="food-name">Small slice pizza</div>
+              <div class="food-kcal">300 kcal</div>
+              <input type="radio" name="dinner-high" />
+            </div>
+            <div class="food-item">
+              <div class="food-emoji">🍟</div>
+              <div class="food-name">Baked fries</div>
+              <div class="food-kcal">220 kcal</div>
+              <input type="radio" name="dinner-high" />
+            </div>
+            <div class="food-item">
+              <div class="food-emoji">🍰</div>
+              <div class="food-name">Small dessert</div>
+              <div class="food-kcal">180 kcal</div>
+              <input type="radio" name="dinner-high" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-buttons" style="margin-top:18px;">
+        <button class="nav-btn back" onclick="showPage('bloodSugar')">Back</button>
+        <button class="nav-btn next" onclick="showPage('summary')">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="summary" class="page-section"></div>
+
+  <div id="lifestyle" class="page fade-in">
+  <div class="card"> <!-- keep design consistent with other pages -->
+    <div class="lifestyle-banner">
+      <!---<img src="image.jpeg" alt="Healthy Lifestyle" />-->
+
+    </div>
+
+    <h2 class="lifestyle-title">Healthy Lifestyle Tips</h2>
+
+    <ul class="list-disc">
+      <li>💧 Drink enough water every day</li>
+      <li>🚶‍♂️ Walk 30 minutes daily</li>
+      <li>🥗 Eat more vegetables & leafy greens</li>
+      <li>⏳ Maintain regular meal timings</li>
+      <li>🧘‍♀️ Practice meditation or yoga</li>
+    </ul>
+
+    <div class="nav-buttons">
+      <button class="nav-btn back" onclick="showPage('summary')">← Back</button>
+      <button class="nav-btn next" onclick="showPage('final')">Finish →</button>
+    </div>
+  </div>
+</div>
+
+
+   <!-- Final Page -->
+  <div id="final" class="page fade-in"></div>
+
+  <!-- ==========================================================
+       ⚠️ POPUP BOX FOR CALORIE ALERT
+  ========================================================== -->
+  <div id="popupBox" class="popup">
+    <div class="popup-content">
+      <p id="popupMessage"></p>
+      <button id="popupOk" class="popup-btn">OK</button>
+    </div>
+  </div>
+   <!-- 🔴 GLOBAL WARNING BAR (Persistent across pages) -->
+  <div id="globalWarningBar" class="warning-bar">
+    ⚠️ You have exceeded the recommended calories! Please proceed cautiously with your meal plan.
+  </div>
+  <!-- 📘 Footer for all pages -->
+<footer id="eduFooter">
+ Disclaimer: This diabetes diet planner is for educational purposes only and should not be considered medical advice.
+</footer>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>

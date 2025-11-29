@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Summary</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: url("background1.jpg") no-repeat center center / cover;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #1a202c;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      width: 90%;
+      max-width: 700px;
+      animation: fadeIn 0.8s ease;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      color: #2b6cb0;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .food-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .food-item {
+      display: flex;
+      align-items: center;
+      background: #f7fafc;
+      border-radius: 10px;
+      padding: 8px 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .food-emoji { font-size: 1.3rem; margin-right: 8px; }
+    .food-name { flex: 1; font-weight: 600; color: #2d3748; }
+    .food-kcal { font-weight: 600; color: #2f855a; }
+
+    .total-box {
+      margin-top: 18px;
+      text-align: center;
+      background: linear-gradient(120deg, #ebf8ff, #e6fffa);
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      color: #22543d;
+    }
+
+    /* 🕒 Reminder box (smaller + centered) */
+    .reminder-setup {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      width: 90%;
+      max-width: 500px;
+      text-align: left;
+      margin-top: 15px;
+    }
+
+    .reminder-setup h3 {
+      text-align: center;
+      color: #2b6cb0;
+      margin-bottom: 12px;
+      font-size: 1.2rem;
+    }
+
+    .reminder-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .reminder-row label {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .reminder-row input[type="time"],
+    .reminder-row input[type="number"] {
+      flex: 1;
+      border: 1px solid #cbd5e0;
+      border-radius: 8px;
+      padding: 5px;
+      font-size: 0.9rem;
+    }
+
+    .save-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      background: linear-gradient(90deg, #319795, #38b2ac);
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 8px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .save-btn:hover { transform: scale(1.05); }
+
+    .nav-buttons {
+      text-align: center;
+      margin-top: 18px;
+    }
+
+    .nav-btn.next {
+      background: linear-gradient(90deg, #2b6cb0, #2c5282);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 22px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .nav-btn.next:hover { transform: scale(1.05); }
+
+    /* Popup style */
+    #reminderPopup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .popup-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px 26px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      animation: fadeIn 0.4s ease;
+    }
+
+    .popup-box h3 { color: #2b6cb0; margin-bottom: 8px; }
+    .popup-box button {
+      background: linear-gradient(90deg,#38b2ac,#319795);
+      border: none;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    .popup-box button:hover { transform: scale(1.05); }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+
+<body>
+  <body>
+  <!-- 🔴 GLOBAL WARNING BAR (Persistent across pages) -->
+  <div id="globalWarningBar" class="warning-bar">
+    ⚠️ You have exceeded the recommended calories! Please proceed cautiously with your meal plan.
+  </div>
+
+  <!-- 🍱 FOOD SUMMARY -->
+  <div class="card">
+    <h2>🍱 Your Selected Food Summary</h2>
+    <div id="foodList" class="food-list"></div>
+    <div id="totalCaloriesBox" class="total-box"></div>
+  </div>
+
+  <!-- ⏰ REMINDERS BELOW -->
+  <div class="reminder-setup">
+    <h3>⏰ Set Your Meal & Water Reminders</h3>
+
+    <div class="reminder-row"><label>🥣 Breakfast</label><input type="time" id="breakfastTime" value="08:00"></div>
+    <div class="reminder-row"><label>🍱 Lunch</label><input type="time" id="lunchTime" value="13:00"></div>
+    <div class="reminder-row"><label>🍎 Snack</label><input type="time" id="snackTime" value="17:00"></div>
+    <div class="reminder-row"><label>🍲 Dinner</label><input type="time" id="dinnerTime" value="20:00"></div>
+    <div class="reminder-row"><label>💧 Water (Hours)</label><input type="number" id="waterInterval" min="1" max="6" value="1"></div>
+
+    <button class="save-btn" onclick="saveReminders()">💾 Save Reminders</button>
+  </div>
+
+  <!-- Lifestyle button -->
+  <!-- Navigation Buttons -->
+<div class="nav-buttons">
+  <button class="nav-btn back" onclick="goBack()">← Back</button>
+  <button class="nav-btn next" onclick="goLifestyle()">💪 Continue to Lifestyle Tips →</button>
+</div>
+
+  <!-- 🔔 Popup for alarm -->
+  <div id="reminderPopup">
+    <div class="popup-box">
+      <h3 id="reminderTitle">⏰ Reminder</h3>
+      <p id="reminderText"></p>
+      <button onclick="closeReminder()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    // ✅ Load only food data for Summary Page (no personal details)
+document.addEventListener("DOMContentLoaded", () => {
+  const listDiv = document.getElementById("foodList");
+  const totalBox = document.getElementById("totalCaloriesBox");
+
+  const selectedFoods = JSON.parse(localStorage.getItem("selectedFoods") || "[]");
+  const totalCalories = localStorage.getItem("totalCalories") || "0";
+
+  if (selectedFoods.length === 0) {
+    listDiv.innerHTML = "<p>No food items selected.</p>";
+  } else {
+    listDiv.innerHTML = selectedFoods
+      .map(f => `
+        <div class="food-item">
+          <div class="food-emoji">${f.emoji}</div>
+          <div class="food-name">${f.name}</div>
+          <div class="food-kcal">${f.kcal}</div>
+        </div>
+      `).join("");
+  }
+
+  totalBox.innerHTML = `🔥 <strong>Total Calories Selected:</strong> ${totalCalories} kcal`;
+});
+
+    // ✅ Reminder logic
+    const alarmSound = new Audio("alaram.mp3");
+
+    function showReminder(title, text) {
+      document.getElementById("reminderTitle").textContent = title;
+      document.getElementById("reminderText").textContent = text;
+      document.getElementById("reminderPopup").style.display = "flex";
+      alarmSound.play();
+
+      // Auto stop sound after 10 sec
+      setTimeout(() => {
+        alarmSound.pause();
+        alarmSound.currentTime = 0;
+      }, 10000);
+    }
+
+    function closeReminder() {
+      document.getElementById("reminderPopup").style.display = "none";
+      alarmSound.pause();
+      alarmSound.currentTime = 0;
+    }
+
+    function loadReminders() {
+      const defaults = {
+        breakfastTime: "08:00",
+        lunchTime: "13:49",
+        snackTime: "17:00",
+        dinnerTime: "23:50",
+        waterInterval: 1
+      };
+      const saved = JSON.parse(localStorage.getItem("reminders") || "{}");
+      return { ...defaults, ...saved };
+    }
+
+    function saveReminders() {
+      const reminders = {
+        breakfastTime: document.getElementById("breakfastTime").value,
+        lunchTime: document.getElementById("lunchTime").value,
+        snackTime: document.getElementById("snackTime").value,
+        dinnerTime: document.getElementById("dinnerTime").value,
+        waterInterval: Number(document.getElementById("waterInterval").value)
+      };
+      localStorage.setItem("reminders", JSON.stringify(reminders));
+      alert("✅ Reminders Saved Successfully!");
+      setupReminderIntervals(reminders);
+    }
+
+    // ✅ Fixed no-repeat reminder trigger
+    function setupReminderIntervals(settings) {
+      const reminderList = [
+        { time: settings.breakfastTime, title: "🥣 Breakfast Time", text: "Start your day with a healthy meal!" },
+        { time: settings.lunchTime, title: "🍱 Lunch Time", text: "Eat balanced with veggies & protein." },
+        { time: settings.snackTime, title: "🍎 Snack Time", text: "Grab a light snack to stay energized!" },
+        { time: settings.dinnerTime, title: "🍲 Dinner Time", text: "Keep it light and finish early." }
+      ];
+
+      let lastTriggered = null;
+
+      setInterval(() => {
+        const now = new Date();
+        const current = now.getHours().toString().padStart(2, "0") + ":" + now.getMinutes().toString().padStart(2, "0");
+
+        if (current !== lastTriggered) {
+          reminderList.forEach(r => {
+            if (r.time === current) {
+              showReminder(r.title, r.text);
+              lastTriggered = current;
+            }
+          });
+        }
+      }, 10000);
+
+      setInterval(() => {
+        showReminder("💧 Water Time", "Time to drink some water and refresh!");
+      }, settings.waterInterval * 60 * 60 * 1000);
+    }
+
+    const reminderSettings = loadReminders();
+    document.getElementById("breakfastTime").value = reminderSettings.breakfastTime;
+    document.getElementById("lunchTime").value = reminderSettings.lunchTime;
+    document.getElementById("snackTime").value = reminderSettings.snackTime;
+    document.getElementById("dinnerTime").value = reminderSettings.dinnerTime;
+    document.getElementById("waterInterval").value = reminderSettings.waterInterval;
+    setupReminderIntervals(reminderSettings);
+
+    function goLifestyle() {
+  // Save intent to localStorage
+  localStorage.setItem("goto", "lifestyle");
+  // Redirect back to main app (where script.js runs)
+  window.location.href = "index.html";  // ✅ replace with your main file name if different
+}
+
+
+
+    // ✅ Show warning bar if global alert exists
+document.addEventListener("DOMContentLoaded", () => {
+  const savedAlert = localStorage.getItem("globalAlert");
+  const bar = document.getElementById("globalWarningBar");
+  if (savedAlert && bar) {
+    bar.classList.add("show");
+  }
+});
+
+
+    
+  </script>
+</body>
+</html>
